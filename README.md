@@ -54,6 +54,31 @@ The plugin has one hook module, `hooks/register.tsx`. It:
 
 What the hook changes: the area above the prompt box (the rows), the plugin's own board state for the session, and the next user message's session context when an owned helper has stalled (one short stall note, once per helper). It also writes notification-deduplication marker files under `~/.claude/crew-board/`. It changes no tool calls, no tool results, no files of yours, and no settings.
 
+## Programs the hook runs, and why
+
+The hook runs local programs through Claude Code's process API only. Every command is one of these, with only the process id, helper name, or notification text filled in at run time:
+
+| Command | Why |
+| --- | --- |
+| `/bin/sh -c 'echo $PPID'` | Learn this Claude Code process id when the host hides it. |
+| `ps -Ao pid=,ppid=,etime=,command=` | List running processes to find helpers launched from this session. |
+| `ps eww -o pid=,command= -p <pids>` | Read the candidate helpers' environment to match `CLAUDE_CODE_SESSION_ID`. Only that one variable is kept. |
+| `lsof -a -p <pid> -d cwd -Fn` | Find a proven helper's working folder. |
+| `lsof -p <pid> -a -d 1,2 -Fn` | Find a proven helper's output log file, so its latest action can be read. |
+| `/bin/sh -c 'mkdir -p ... && set -C && : > .../stall-markers/<name>'` | Create an empty marker file under `~/.claude/crew-board/stall-markers/` so a stall is notified once. |
+| `osascript -e 'display notification ...'` (macOS only) | Show one desktop notification when an owned helper stalls. |
+
+Each program is required for the feature next to it; none installs anything, and a missing program only limits discovery.
+
+## What the hook sends, and where
+
+- To the macOS Notification Center, through `osascript`: one notification per stalled helper, containing the helper's name and how long it has been quiet.
+- Into this Claude session's context, through the user-prompt hook's `additionalContext`: one short stall note per stalled owned helper, so Claude knows a helper has gone quiet.
+- To disk: empty marker files under `~/.claude/crew-board/stall-markers/`.
+- Nowhere else. The hook makes no network calls and sends nothing to any server.
+
+The one piece of reflective code, `(globalThis as { process?: { pid?: number } }).process?.pid`, reads this Claude Code process's own id so that helpers can be matched to this session; when the host hides `process`, the `/bin/sh -c 'echo $PPID'` command above is used instead.
+
 ## Privacy
 
 The plugin scans the machine's process list with `ps` and uses `lsof` for proven helpers' log paths and cwd. It reads those helper logs for progress, writes notification-deduplication markers under `~/.claude/crew-board/`, stores board state in Claude Code plugin state, and injects a stall note into the next user message's session context. With `showElsewhere=false`, other sessions' logs and cwd are not read; opting in expands that scope. Candidate environment queries retain only `CLAUDE_CODE_SESSION_ID`, never full environment strings. The plugin makes no network requests; the stall note follows normal Claude conversation data handling. See [Privacy](PRIVACY.md) for retention and deletion.
