@@ -1,0 +1,18 @@
+{
+  "name": "crew-board",
+  "description": "Marketplace for the crew-board Claude Code plugin",
+  "owner": {
+    "name": "Ariel Soothy"
+  },
+  "plugins": [
+    {
+      "name": "crew-board",
+      "description": "Session workers and their latest progress above the prompt.",
+      "author": {
+        "name": "Ariel Soothy"
+      },
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}
