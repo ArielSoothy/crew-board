@@ -42,7 +42,7 @@ Configure these values under `pluginConfigs.crew-board`:
 
 The board shows up to six owned rows and four elsewhere rows, with overflow counts. Action counts measure recognized log entries, not percentage complete.
 
-## What the hook does
+## What the hook does and changes
 
 The plugin has one hook module, `hooks/register.tsx`. It:
 
@@ -52,7 +52,7 @@ The plugin has one hook module, `hooks/register.tsx`. It:
 - Marks a row finished when the subagent's turn completes or its task notification arrives, and clears the board when the session ends.
 - Draws the rows above the prompt box.
 
-What it changes: the area above the prompt box (the rows), the plugin's own board state for the session, and the next user message's session context when an owned helper has stalled (one short stall note, once per helper). It also writes notification-deduplication marker files under `~/.claude/crew-board/`. It changes no tool calls, no tool results, no files of yours, and no settings.
+What the hook changes: the area above the prompt box (the rows), the plugin's own board state for the session, and the next user message's session context when an owned helper has stalled (one short stall note, once per helper). It also writes notification-deduplication marker files under `~/.claude/crew-board/`. It changes no tool calls, no tool results, no files of yours, and no settings.
 
 ## Privacy
 
