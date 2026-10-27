@@ -1,0 +1,38 @@
+{
+  "name": "crew-board",
+  "version": "0.2.0",
+  "description": "Shows session helpers above the prompt by scanning the machine's process list with ps and lsof, reading helper logs for progress, writing stall markers under ~/.claude/crew-board/, and injecting a stall note into session context.",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "showElsewhere": {
+      "type": "boolean",
+      "title": "Show helpers elsewhere",
+      "description": "Discover detached helpers and helpers from other Claude windows on this machine.",
+      "default": false
+    },
+    "maxAgeSeconds": {
+      "type": "number",
+      "title": "Worker maximum age",
+      "description": "Expire workers with no observed completion after this many seconds.",
+      "default": 7200
+    },
+    "stallMinutes": {
+      "type": "number",
+      "title": "Helper stall timeout",
+      "description": "Warn when a running external helper writes no new output for this many minutes.",
+      "default": 8
+    }
+  },
+  "author": {
+    "name": "Ariel Soothy"
+  },
+  "license": "MIT",
+  "icon": "./.claude-plugin/icon.png",
+  "keywords": [
+    "productivity",
+    "workers",
+    "progress"
+  ],
+  "homepage": "https://github.com/ArielSoothy/crew-board",
+  "repository": "https://github.com/ArielSoothy/crew-board"
+}
